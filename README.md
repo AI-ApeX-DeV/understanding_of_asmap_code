@@ -3,53 +3,58 @@ detailed understanding of classes and functions in the asmap code
 
 ASNEntry: a class that represents an Autonomous System Number (ASN) entry, which is a tuple of two elements. The first element is a list of boolean values representing an IP prefix, and the second element is an integer representing the ASN. The class contains a few helper methods for comparison and hashing.
 
-ASMap: a class that represents a map of IP prefixes to ASNs. The map is implemented as a trie, where each node is a tuple of two elements: a boolean value representing the current bit in the prefix, and either an ASN or another tuple representing a subtree of the trie.
+**ASMap**: a class that represents a map of IP prefixes to ASNs. The map is implemented as a trie, where each node is a tuple of two elements: a boolean value representing the current bit in the prefix, and either an ASN or another tuple representing a subtree of the trie.
            	
 The helper functions in this module are:
  
-net_to_prefix: a function that converts an IPv4 or IPv6 network to a prefix represented as a list of bits. If the network is an IPv4 range, it is remapped to its IPv4-mapped IPv6 range (::ffff:0:0/96).
+**net_to_prefix**: a function that converts an IPv4 or IPv6 network to a prefix represented as a list of bits. If the network is an IPv4 range, it is remapped to its IPv4-mapped IPv6 range (::ffff:0:0/96).
 
-prefix_to_net: the reverse of net_to_prefix, converting a prefix represented as a list of bits to an IPv4 or IPv6 network.
+**prefix_to_net**: the reverse of net_to_prefix, converting a prefix represented as a list of bits to an IPv4 or IPv6 network.
 
-_VarLenCoder: a class representing a custom variable-length binary encoder/decoder for integers. It is used internally by the ASMap  class to encode and decode ASN values efficiently.
+**_VarLenCoder**: a class representing a custom variable-length binary encoder/decoder for integers. It is used internally by the ASMap  class to encode and decode ASN values efficiently.
 
-net_to_prefix(net: Union[ipaddress.IPv4Network,ipaddress.IPv6Network]) -> List[bool]: This function takes an IPv4 or IPv6 network object and returns its corresponding prefix as a list of boolean values, where each element in the list represents a bit in the prefix.
+**net_to_prefix(net: Union[ipaddress.IPv4Network,ipaddress.IPv6Network]) -> List[bool]**: This function takes an IPv4 or IPv6 network object and returns its corresponding prefix as a list of boolean values, where each element in the list represents a bit in the prefix.
 
-prefix_to_net(prefix:List[bool])-> Union[ipaddress.IPv4Network,ipaddress.IPv6Network]: This function is the reverse of net_to_prefix, taking a list of boolean values representing a prefix and returning an IPv4 or IPv6 network object.
+**prefix_to_net(prefix:List[bool])-> Union[ipaddress.IPv4Network,ipaddress.IPv6Network]**: This function is the reverse of net_to_prefix, taking a list of boolean values representing a prefix and returning an IPv4 or IPv6 network object.
 
-ASNEntry = Tuple[List[bool], int]: This is a type alias for a tuple that represents an (IP prefix, ASN) entry, where the IP prefix is represented as a list of boolean values and the ASN is an integer.
+**ASNEntry = Tuple[List[bool], int]**: This is a type alias for a tuple that represents an (IP prefix, ASN) entry, where the IP prefix is represented as a list of boolean values and the ASN is an integer.
 
-ASNDiff = Tuple[List[bool], int, int]: This is a type alias for a tuple that represents a (IP prefix, old ASN, new ASN) entry, where the IP prefix is represented as a list of boolean values and the old and new ASNs are integers.
+**ASNDiff = Tuple[List[bool], int, int]**: This is a type alias for a tuple that represents a (IP prefix, old ASN, new ASN) entry, where the IP prefix is represented as a list of boolean values and the old and new ASNs are integers.
 
-_VarLenCoder: This is a class that represents a custom variable-length binary encoder and decoder for integers. The class has a constructor that takes two parameters: minval (an integer representing the minimum value that can be encoded) and clsbits (a list of integers representing the number of bits used to encode each class of integers). The class has three methods: can_encode checks whether a given integer can be encoded using the current minval and clsbits; encode encodes an integer and appends the result to a list of integers; and encode_size computes the number of bits required to encode an integer.
+**_VarLenCoder**: This is a class that represents a custom variable-length binary encoder and decoder for integers. The class has a constructor that takes two parameters: minval (an integer representing the minimum value that can be encoded) and clsbits (a list of integers representing the number of bits used to encode each class of integers). The class has three methods: can_encode checks whether a given integer can be encoded using the current minval and clsbits; encode encodes an integer and appends the result to a list of integers; and encode_size computes the number of bits required to encode an integer.
 
-build_map(asns: List[ASNEntry], full_tree: bool = True) -> List[ASNDiff]: This function takes a list of (prefix, ASN) entries and returns a list of (prefix, old ASN, new ASN) entries that represent changes in the ASN for each prefix. The full_tree parameter is a boolean that determines whether the function should build a full tree of ASNs or only the specified ones.
+**build_map(asns: List[ASNEntry], full_tree: bool = True) -> List[ASNDiff]**: This function takes a list of (prefix, ASN) entries and returns a list of (prefix, old ASN, new ASN) entries that represent changes in the ASN for each prefix. The full_tree parameter is a boolean that determines whether the function should build a full tree of ASNs or only the specified ones.
 
-_build_map_recursive(asns: Dict[int, List[ASNEntry]], start_bit: int, end_bit: int, use_clustering: bool) -> List[ASNDiff]: This is a helper function for build_map that recursively builds a list of (prefix, old ASN, new ASN) entries. It takes a dictionary of (ASN, [(prefix, ASN)]) pairs, a start bit, an end bit, and a boolean that determines whether to use clustering to optimize the prefix list.
+**_build_map_recursive(asns: Dict[int, List[ASNEntry]], start_bit**: int, end_bit: int, use_clustering: bool) -> List[ASNDiff]: This is a helper function for build_map that recursively builds a list of (prefix, old ASN, new ASN) entries. It takes a dictionary of (ASN, [(prefix, ASN)]) pairs, a start bit, an end bit, and a boolean that determines whether to use clustering to optimize the prefix list.
 
-build_optimized_map(asns: List[ASNEntry]) -> List[ASNDiff]: This function takes a list of (prefix, ASN) entries and returns an optimized list of (prefix, old ASN, new ASN) entries that represent changes in the ASN for each prefix.
+build_optimized_map(asns: List[ASNEntry]) -> List[ASNDiff]**: This function takes a list of (prefix, ASN) entries and returns an optimized list of (prefix, old ASN, new ASN) entries that represent changes in the ASN for each prefix.
 
-_build_optimized_map_recursive(asns: Dict[int, List[ASNEntry]], start_bit: int, end_bit: int) -> List[ASNDiff]: This is a helper function for build_optimized_map that recursively builds an optimized list of (prefix, old ASN, new ASN) entries. It takes a dictionary of (ASN, [(prefix, ASN)]) pairs, a start bit, and an end bit
+_build_optimized_map_recursive(asns: Dict[int, List[ASNEntry]], start_bit: int, end_bit: int) -> List[ASNDiff]**: This is a helper function for build_optimized_map that recursively builds an optimized list of (prefix, old ASN, new ASN) entries. It takes a dictionary of (ASN, [(prefix, ASN)]) pairs, a start bit, and an end bit
 _build_clustered_prefix_list(prefixes):This function takes a list of prefixes and builds a prefix list with clusters of consecutive IP prefixes collapsed into a single summary prefix. For example, if the input prefix list contains the following  prefixes:
  
+ ![image](https://user-images.githubusercontent.com/99337487/232199578-2c95a431-bbcd-432e-81c2-07cd7e57bebf.png)
+
 The output prefix list will contain the following clusters:
+ 
+ ![image](https://user-images.githubusercontent.com/99337487/232199662-6617ee37-74eb-4a3b-b7f1-bf259cf251b5.png)
+
  
 This function is used to simplify the prefix list by collapsing consecutive prefixes into a smaller number of summary prefixes, which reduces the number of rules that need to be installed on the router.
 
 
-process_rules(rules): This function takes a list of rules and processes them to generate a prefix list that can be installed on the router. It first builds a dictionary of ACL rules based on the IP protocol, and then creates a prefix list for each protocol by merging the ACL rules and building a clustered prefix list.
+**process_rules(rules)**: This function takes a list of rules and processes them to generate a prefix list that can be installed on the router. It first builds a dictionary of ACL rules based on the IP protocol, and then creates a prefix list for each protocol by merging the ACL rules and building a clustered prefix list.
 generate_prefix_lists(acls):This function takes a dictionary of ACLs and generates prefix lists for each ACL using the process_rules() function. The output of this function is a dictionary of prefix lists, where the keys are the names of the ACLs and the values are the prefix lists.
 
-_to_entries_flat(self, fill: bool = False) -> List[ASNEntry]: This function converts an ASMap object to a list of non-overlapping (prefix, asn) tuples. The fill parameter, if True, permits the resulting ASNEntry objects to cover subnets that are unassigned in the ASMap object. This can result in a shorter list.
+**_to_entries_flat(self, fill: bool = False) -> List[ASNEntry]**: This function converts an ASMap object to a list of non-overlapping (prefix, asn) tuples. The fill parameter, if True, permits the resulting ASNEntry objects to cover subnets that are unassigned in the ASMap object. This can result in a shorter list.
 
-_to_entries_minimal(self, fill: bool = False) -> List[ASNEntry]: This function converts an ASMap object to a minimal list of ASNEntry objects, exploiting overlap. The fill parameter, if True, permits the resulting ASNEntry objects to cover subnets that are unassigned in the ASMap object. This can result in a shorter list.
+**_to_entries_minimal(self, fill: bool = False) -> List[ASNEntry]**: This function converts an ASMap object to a minimal list of ASNEntry objects, exploiting overlap. The fill parameter, if True, permits the resulting ASNEntry objects to cover subnets that are unassigned in the ASMap object. This can result in a shorter list.
 str (self) -> str: This function returns a string containing Python code constructing the ASMap object.
 
-to_entries(self, overlapping: bool = True, fill: bool = False) -> List[ASNEntry]: This function converts the mappings in the ASMap object to a list of ASNEntry objects. The overlapping parameter, if True, permits the subnets in the resulting ASNEntry objects to overlap. This can result in a shorter list. The fill parameter, if True, permits the resulting ASNEntry objects to cover subnets that are unassigned in the ASMap object. This can result in a shorter list.
+**to_entries(self, overlapping: bool = True, fill: bool = False) -> List[ASNEntry]**: This function converts the mappings in the ASMap object to a list of ASNEntry objects. The overlapping parameter, if True, permits the subnets in the resulting ASNEntry objects to overlap. This can result in a shorter list. The fill parameter, if True, permits the resulting ASNEntry objects to cover subnets that are unassigned in the ASMap object. This can result in a shorter list.
 
-from_random(num_leaves: int = 10, max_asn: int = 6, unassigned_prob: float = 0.5) -> "ASMap": This static method constructs a random ASMap object. The num_leaves parameter specifies the number of leaves in the trie, the max_asn parameter specifies the maximum ASN value, and the unassigned_prob parameter specifies the probability for leaf nodes to be unassigned.
+**from_random(num_leaves: int = 10, max_asn: int = 6, unassigned_prob: float = 0.5) -> "ASMap"**: This static method constructs a random ASMap object. The num_leaves parameter specifies the number of leaves in the trie, the max_asn parameter specifies the maximum ASN value, and the unassigned_prob parameter specifies the probability for leaf nodes to be unassigned.
 
-_to_binnode(self, fill: bool = False) -> _BinNode: This function converts a trie to a binary node. The fill parameter, if True, permits the resulting ASNEntry objects to cover subnets that are unassigned in the ASMap object. This can result in a shorter list.
+**_to_binnode(self, fill: bool = False) -> _BinNode**: This function converts a trie to a binary node. The fill parameter, if True, permits the resulting ASNEntry objects to cover subnets that are unassigned in the ASMap object. This can result in a shorter list.
 
 The test_asmap_roundtrips function tests whether random ASMap objects can be round-tripped to/from entries/binary. It generates random ASMap objects with varying numbers of leaves, bits in the AS numbers used, and probability that leaves are unassigned. For each object, it tests the following: 
 1. Construct an ASMap object from random parameters.
